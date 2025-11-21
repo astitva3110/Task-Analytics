@@ -16,3 +16,11 @@ exports.findById = async (id) => {
 exports.findByEmail = async (email) => {
     return await User.findOne({ email })
 }
+
+exports.updateUserTasks = async (userId, tasks) => {
+    return await User.findByIdAndUpdate(userId, { tasks }, { new: true });
+};
+
+exports.getUserByManagerId = async (managerId) => {
+    return await User.find({ manager: managerId });
+};

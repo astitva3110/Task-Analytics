@@ -5,8 +5,10 @@ const { limiter } =require('../middlewares/rateLimit.middleware')
 const {authMiddleware} = require('../middlewares/auth.middleware');
 
 
-router.get('/:username',limiter,authMiddleware, userController.getUserById);
+router.get('/details', limiter, authMiddleware, userController.getUserById);
+
 router.patch('/tasks/:id', limiter, authMiddleware, userController.updateUserTasks);
+
 router.get('/task', limiter,authMiddleware, userController.getUserTasks);
 
 module.exports = router;
