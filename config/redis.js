@@ -1,4 +1,5 @@
-import { createClient } from "redis";
+// config/redis.js
+const { createClient } = require("redis");
 
 const redis = createClient({
   username: "default",
@@ -6,18 +7,20 @@ const redis = createClient({
   socket: {
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
-  },
+  }
 });
 
-redis.on("error", (err) => console.error("Redis Client Error:", err));
+redis.on("error", (err) => {
+  console.error("Redis Client Error:", err);
+});
 
-export const connectRedis = async () => {
+async function connectRedis() {
   try {
     await redis.connect();
     console.log("Redis connected");
   } catch (err) {
     console.error("Redis connection error:", err);
   }
-};
+}
 
-export default redis;
+module.exports = { redis, connectRedis };

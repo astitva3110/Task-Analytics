@@ -2,7 +2,9 @@ const jwt = require('jsonwebtoken');
 const userRepository = require('../repositories/user.repository');
 const sendEmail = require('../utils/email.util');
 const bcrypt = require('bcrypt')
-const {isValidEmail}=require('../utils/validator.util')
+const { isValidEmail } = require('../utils/validator.util')
+const { redis } = require("../config/redis");
+
 
 
 exports.login = async (userData) => {
@@ -99,3 +101,18 @@ exports.register = async (userData) => {
         throw new Error('Registration failed: ' + error.message);
     }
 }
+
+exports.logout = async (req) => {
+    try {
+        const token = req.headers.authorization?.split(" ")[1];
+        if (!token) {
+            throw new Error('No token provided');
+        }
+        await redis.set(token, "blacklisted", { EX: 60 * 60 * 24 });
+        return true;
+
+    } catch (error) {
+        console.error(error);
+        throw new Error('Logout failed: ' + error.message);
+    }
+};

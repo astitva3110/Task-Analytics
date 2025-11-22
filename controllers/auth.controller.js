@@ -30,3 +30,19 @@ exports.register = async (req, res, next) => {
         next(error);
     }
 }
+
+
+exports.logout = async (req, res, next) => {
+    try {
+        const result=await authService.logout(req);
+        if (result === undefined) {
+            return next();
+        }
+        res.status(200).json({  
+            success: true,
+            message: 'Logout successful'
+        });
+    } catch (error) {
+        next(error);
+    }
+};

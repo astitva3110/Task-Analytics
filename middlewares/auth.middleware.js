@@ -1,13 +1,16 @@
-import redis from "../config/redis.js";
-import jwt from "jsonwebtoken";
+// middlewares/auth.middleware.js
+const jwt = require("jsonwebtoken");
+const { redis } = require("../config/redis");
 
-export const authMiddleware= async (req, res, next) => {
+exports.authMiddleware = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
 
-  if (!token) return res.status(401).json({ message: "No token provided" });
-
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
 
   const isBlacklisted = await redis.get(token);
+
   if (isBlacklisted) {
     return res.status(401).json({ message: "Token has been logged out" });
   }
@@ -20,5 +23,3 @@ export const authMiddleware= async (req, res, next) => {
     return res.status(401).json({ message: "Invalid token" });
   }
 };
-
-
