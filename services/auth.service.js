@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const repositories = require('../repositories/user.repository');
+const userRepository = require('../repositories/user.repository');
 const sendEmail = require('../utils/email.util');
 const bcrypt = require('bcrypt')
 const {isValidEmail}=require('../utils/validator.util')
@@ -8,6 +8,7 @@ const {isValidEmail}=require('../utils/validator.util')
 exports.login = async (userData) => {
     try {
         const { identifier, password } = userData;
+        console.log('Login attempt for identifier:', identifier,password);
 
         if (!identifier || !password) {
             throw new Error('Username/Email and password are required');
@@ -17,12 +18,16 @@ exports.login = async (userData) => {
 
         if (isValidEmail(identifier)) {
 
-            user = await repositories.findByEmail(identifier);
+            user = await userRepository.findByEmail(identifier);
 
         } else {
 
-            user = await repositories.findUserByUsername(identifier);
+            user = await userRepository.findUserByUsername(identifier);
 
+        }
+
+        if (!user) {
+            throw new Error('Invalid username or password');
         }
 
         const isPasswordValid = await bcrypt.compare(userData.password, user.password);
@@ -57,13 +62,13 @@ exports.register = async (userData) => {
             throw new Error('Invalid email format');
         }
         
-        const existingUserName = await repositories.findUserByUsername(userData.username);
+        const existingUserName = await userRepository.findUserByUsername(userData.username);
 
         if (existingUserName) {
             throw new Error('Username already exists');
         }
 
-        const existingEmail = await repositories.findByEmail(userData.email);
+        const existingEmail = await userRepository.findByEmail(userData.email);
 
         if (existingEmail) {
             throw new Error('Email already registered');
@@ -71,7 +76,7 @@ exports.register = async (userData) => {
 
         const hashedPassword = await bcrypt.hash(userData.password, 10);
 
-        const newUser = await repositories.createUser({
+        const newUser = await userRepository.createUser({
             ...userData,
             password: hashedPassword
         });

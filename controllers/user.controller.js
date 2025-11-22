@@ -3,12 +3,11 @@ const userService = require('../services/user.service');
 
 exports.getUserById = async (req, res) => {
     try {
-        const username = req.params.username;
         const loggedInUser = req.user;
 
-        const deatials = await userService.getUserById(username, loggedInUser);
+        const detials = await userService.getUserById( loggedInUser);
 
-        res.json(deatials);
+        res.json(detials);
 
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -20,7 +19,8 @@ exports.updateUserTasks = async (req, res) => {
     try {
         const loggedInUser = req.user;
         const taskid = req.params.id;
-        const newTasks = userService.updateUserTasks(loggedInUser,taskid, req.body);
+        const {status} = req.body;
+        const newTasks = userService.updateUserTasks(loggedInUser,taskid, status);
         res.status(200).json(newTasks);
     }
     catch (error) {

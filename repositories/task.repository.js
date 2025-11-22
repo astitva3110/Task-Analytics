@@ -25,3 +25,30 @@ exports.createTask = async (taskData) => {
 exports.findByUser = async (userIds) => {   
     return await Task.find({ assignedTo: { $in: userIds } }).populate('assignedTo')
 }
+
+exports.getTaskStatistics = async () => {
+    const stats = await Task.aggregate([
+        {
+            $group: {
+                _id: null,
+                total: { $sum: 1 },
+                completed: {
+                    $sum: { $cond: [{ $eq: ["$status", "completed"] }, 1, 0] }
+                },
+                pending: {
+                    $sum: { $cond: [{ $eq: ["$status", "pending"] }, 1, 0] }
+                },
+                highPriority: {
+                    $sum: { $cond: [{ $eq: ["$priority", "high"] }, 1, 0] }
+                }
+            }
+        }
+    ]);
+
+    return stats[0] || {
+        total: 0,
+        completed: 0,
+        pending: 0,
+        highPriority: 0
+    };
+};

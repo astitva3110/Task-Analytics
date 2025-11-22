@@ -48,18 +48,25 @@ exports.updateTask = async (taskId, updateData) => {
 
 exports.createTask = async (taskData,managerId) => {
     try {
-        if (!taskData.title || !taskData.description || !taskData.status || !taskData.priority || !taskData.dueDate || !taskData.assignedTo) {
+
+        if (!taskData.title || !taskData.description || !taskData.status || !taskData.priority || !taskData.assignedTo) {
             throw new Error('Missing required task fields');
         }
+
         const user = await userRepository.findById(taskData.assignedTo);
-        if (!taskData.assignedTo) {
+
+        if (!user) {
             throw new Error('Assigned user not found');
         }
-        if(user.manager!==managerId){
+
+        if(user.manager!=managerId){
             throw new Error('Not authorized to assign task to this user');
         }
+
         const newTask = await taskRepository.createTask(taskData);
+
         return newTask;
+
     } catch (error) {
         console.error('Error in createTask:', error);
         throw error;

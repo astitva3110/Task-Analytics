@@ -24,3 +24,9 @@ exports.updateUserTasks = async (userId, tasks) => {
 exports.getUserByManagerId = async (managerId) => {
     return await User.find({ manager: managerId });
 };
+
+exports.getUserStatistics = async () => {
+    const userCount = await User.countDocuments();
+    const managerCount = await User.countDocuments({ role: 'manager' });
+    return { userCount, managerCount };
+}
