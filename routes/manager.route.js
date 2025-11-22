@@ -7,10 +7,10 @@ const { allowRoles } = require('../middlewares/role.middleware');
 
 
 
-router.get('/tasks', limiter, authMiddleware, allowRoles('manager'), managerController.getManagerTasks);
+router.get('/tasks', authMiddleware, allowRoles('manager'), managerController.getManagerTasks);
 
-router.put('/tasks/:id', limiter, authMiddleware, allowRoles('manager'), managerController.updateTask);
+router.put('/tasks/:id', authMiddleware, allowRoles('manager'), managerController.updateTask);
 
-router.post('/tasks/create', limiter, authMiddleware, allowRoles('manager'), managerController.createTask);
+router.post('/tasks/create', authMiddleware, allowRoles('manager'), managerController.createTask);
 
 module.exports = router;

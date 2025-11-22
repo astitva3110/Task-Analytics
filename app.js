@@ -1,4 +1,6 @@
 const express = require('express');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
 
 const app = express();
 
@@ -8,33 +10,28 @@ const userRoute = require('./routes/user.route');
 const managerRoute = require('./routes/manager.route');
 const adminRoute = require('./routes/admin.route');
 
-// Built-in middleware
+
+app.use(helmet());             
+app.use(mongoSanitize()); 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/user', userRoute);
 app.use('/api/v1/manager', managerRoute);
 app.use('/api/v1/admin', adminRoute);
 
 
-// Simple request logger
+
+
+
 app.use((req, res, next) => {
 	console.log(`${new Date().toISOString()} ${req.method} ${req.originalUrl}`);
 	next();
 });
 
-// Health check
-app.get('/health', (req, res) => {
-	res.json({ status: 'ok', uptime: process.uptime() });
-});
 
-// Try to mount routes from ./routes if present
-try {
-	const routes = require('./routes');
-	if (typeof routes === 'function') app.use('/', routes);
-} catch (err) {
-	// no-op: keep app usable even when no routes directory exists
-}
+
 
 // 404 handler
 app.use((req, res, next) => {
